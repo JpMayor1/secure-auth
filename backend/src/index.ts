@@ -43,6 +43,9 @@ const bootstrap = async () => {
     })
   );
 
+  // Security headers
+  app.use(helmet());
+
   // Rate limiting
   app.use(globalRateLimiter);
 
@@ -59,17 +62,15 @@ const bootstrap = async () => {
   app.use(cookieParser());
 
   // CSRF protection
-  const csrfProtection = csrf({
-    cookie: {
-      httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    },
-  });
-  app.use(csrfProtection);
-
-  // Security headers
-  app.use(helmet());
+  app.use(
+    csrf({
+      cookie: {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      },
+    })
+  );
 
   // Log IP
   app.use((req, res, next) => {
