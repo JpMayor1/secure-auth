@@ -5,6 +5,7 @@ dotenv.config();
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import csrf from "csurf";
 import express from "express";
 import http from "http";
 import morgan from "morgan";
@@ -13,6 +14,7 @@ import initDB from "@/db/db.connect.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
 import authRoute from "@/routes/auth/auth.route";
+import csrfRoute from "@/routes/csrf/csrf.route";
 import verifierRoute from "@/routes/verifier/verifier.route";
 
 const bootstrap = async () => {
@@ -34,14 +36,24 @@ const bootstrap = async () => {
       credentials: true,
     })
   );
+  // Cookie-based CSRF protection
+  const csrfProtection = csrf({
+    cookie: {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
+  });
   app.use(morgan("dev"));
   app.use(express.json());
   app.use(cookieParser());
+  app.use(csrfProtection);
 
   app.get("/", (req, res) => {
     res.status(200).send("API is running");
   });
 
+  app.use("/api/csrf-token", csrfRoute);
   app.use("/api/verifier", verifierRoute);
   app.use("/api/auth", authRoute);
 
