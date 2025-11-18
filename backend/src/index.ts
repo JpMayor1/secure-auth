@@ -8,6 +8,7 @@ import cors from "cors";
 import csrf from "csurf";
 import express from "express";
 import mongoSanitize from "express-mongo-sanitize";
+import helmet from "helmet";
 import http from "http";
 import morgan from "morgan";
 
@@ -66,6 +67,9 @@ const bootstrap = async () => {
     },
   });
   app.use(csrfProtection);
+
+  // Security headers
+  app.use(helmet());
 
   // Log IP
   app.use((req, res, next) => {
