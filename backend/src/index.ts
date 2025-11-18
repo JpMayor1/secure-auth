@@ -12,6 +12,7 @@ import morgan from "morgan";
 
 import initDB from "@/db/db.connect.js";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
+import { globalRateLimiter } from "./middlewares/limit.middleware";
 
 import authRoute from "@/routes/auth/auth.route";
 import csrfRoute from "@/routes/csrf/csrf.route";
@@ -19,11 +20,14 @@ import verifierRoute from "@/routes/verifier/verifier.route";
 
 const bootstrap = async () => {
   const app = express();
+  app.set("trust proxy", 1);
+
   const PORT = process.env.PORT || 5000;
   const allowedOrigins = process.env.FRONTEND_URLS
     ? JSON.parse(process.env.FRONTEND_URLS)
     : [];
 
+  // CORS
   app.use(
     cors({
       origin: (origin, callback) => {
@@ -36,7 +40,20 @@ const bootstrap = async () => {
       credentials: true,
     })
   );
-  // Cookie-based CSRF protection
+
+  // Rate limiting
+  app.use(globalRateLimiter);
+
+  // Logger
+  app.use(morgan("dev"));
+
+  // JSON parser
+  app.use(express.json());
+
+  // Cookie parser
+  app.use(cookieParser());
+
+  // CSRF protection
   const csrfProtection = csrf({
     cookie: {
       httpOnly: false,
@@ -44,19 +61,25 @@ const bootstrap = async () => {
       sameSite: "lax",
     },
   });
-  app.use(morgan("dev"));
-  app.use(express.json());
-  app.use(cookieParser());
   app.use(csrfProtection);
 
+  // Log IP
+  app.use((req, res, next) => {
+    console.log("Client IP:", req.ip);
+    next();
+  });
+
+  // Root
   app.get("/", (req, res) => {
     res.status(200).send("API is running");
   });
 
+  // Routes
   app.use("/api/csrf-token", csrfRoute);
   app.use("/api/verifier", verifierRoute);
   app.use("/api/auth", authRoute);
 
+  // Error handler
   app.use(globalErrorHandler);
 
   const server = http.createServer(app);
