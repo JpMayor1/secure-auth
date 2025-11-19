@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:restart": "npm run docker:down && npm run docker:up",
+    "docker:logs": "docker compose logs -f backend"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.17",

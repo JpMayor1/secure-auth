@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+bundle/
+dist/
+
+# Logs
+*.log
+
+# Git
+.git/
+.gitignore
+
+# Env files (no secrets in repo)
+.env
+.env.production
+
+# IDE/OS
+.vscode/
+.DS_Store
+
+# Local docker-compose (optional)
+docker-compose.yml

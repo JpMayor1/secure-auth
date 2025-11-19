@@ -1,0 +1,11 @@
+name: "auth-backend"
+
+services:
+  backend:
+    container_name: "backend"
+    build: .
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env.production
+    restart: unless-stopped

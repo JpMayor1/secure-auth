@@ -7,8 +7,6 @@ export async function initCSRF() {
 
     // Store token in default headers
     axiosInstance.defaults.headers.common["X-CSRF-Token"] = token;
-
-    console.log("CSRF Token Initialized:", token);
   } catch (err) {
     console.error("Failed to initialize CSRF token:", err);
   }
