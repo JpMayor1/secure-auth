@@ -81,7 +81,7 @@ const bootstrap = async () => {
   });
 
   // Root
-  app.get("/test", (req, res) => {
+  app.get("/api/test", (req, res) => {
     res.status(200).send("Api is running");
   });
 

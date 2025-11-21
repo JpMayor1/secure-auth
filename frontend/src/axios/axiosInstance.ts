@@ -41,4 +41,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-// Combine domain
