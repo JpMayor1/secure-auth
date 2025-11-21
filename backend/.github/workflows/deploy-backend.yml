@@ -1,0 +1,42 @@
+name: "🚀 Deploy Backend"
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # ---- Build and Push Backend Image ----
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & Push Backend Image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/auth-backend:latest ./backend
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/auth-backend:latest
+
+      # ---- Deploy to VPS ----
+      - name: SSH to VPS and redeploy backend
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ${{ secrets.VPS_APP_PATH }}
+            docker compose pull backend
+            docker compose up -d backend
+            docker image prune -f

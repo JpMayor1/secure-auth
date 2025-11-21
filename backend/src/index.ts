@@ -82,7 +82,7 @@ const bootstrap = async () => {
 
   // Root
   app.get("/", (req, res) => {
-    res.status(200).send("API is running");
+    res.status(200).send("Test Github action");
   });
 
   // Routes
