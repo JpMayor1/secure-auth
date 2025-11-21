@@ -20,7 +20,7 @@ const LandingPage = () => {
       >
         <h1 className="text-white text-xs md:text-2xl font-bold tracking-wide flex items-center gap-2">
           <Lock className="text-white" size={24} />
-          AuthPractice Test
+          AuthPractice
         </h1>
 
         <div className="flex items-center gap-4">
